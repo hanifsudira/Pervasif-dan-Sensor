@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
         android:gravity="center_horizontal"
-        android:textSize="18dp"
+        android:textSize="15dp"
         android:text="Komputasi Pervasif dan Jaringan Sensor"
         android:layout_below="@+id/kel"/>
     <LinearLayout
@@ -39,26 +39,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
+            android:textSize="13dp"
             android:text="5113100178 Kinasih Nur Azizah"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
+            android:textSize="13dp"
             android:text="5113100184 Hanif Sudira"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
+            android:textSize="13dp"
             android:text="5113100187 Muhammad Saddam"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
+            android:textSize="13dp"
             android:text="5113100189 Admiral Budi Arviansyah"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
+            android:textSize="13dp"
             android:text="5113100194 Eko Putro Fitrianto"/>
     </LinearLayout>
 
