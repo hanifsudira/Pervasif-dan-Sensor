@@ -50,7 +50,7 @@
             android:layout_weight=".33"
             android:fontFamily="sans-serif-thin"
             android:textSize="15dp"
-            android:text="X"
+            android:text="X :"
             android:layout_gravity="center_horizontal"/>
         <TextView
             android:id="@+id/ry"
@@ -59,7 +59,7 @@
             android:layout_weight=".33"
             android:fontFamily="sans-serif-thin"
             android:textSize="15dp"
-            android:text="Y"
+            android:text="Y :"
             android:layout_gravity="center_horizontal"/>
         <TextView
             android:id="@+id/rz"
@@ -68,7 +68,7 @@
             android:layout_weight=".33"
             android:fontFamily="sans-serif-thin"
             android:textSize="15dp"
-            android:text="Z"
+            android:text="Z :"
             android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
