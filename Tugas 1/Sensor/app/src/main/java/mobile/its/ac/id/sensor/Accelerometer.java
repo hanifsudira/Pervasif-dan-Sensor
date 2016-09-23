@@ -13,7 +13,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Accelerometer extends AppCompatActivity implements SensorEventListener {
+public class Accelerometer extends AppCompatActivity {
+    private SensorManager sensorManager;
+    private SensorEventListener sensorEventListener;
     private TextView Myx,Myy,Myz;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,21 +24,22 @@ public class Accelerometer extends AppCompatActivity implements SensorEventListe
         Myx = (TextView)findViewById(R.id.myx);
         Myy = (TextView)findViewById(R.id.myy);
         Myz = (TextView)findViewById(R.id.myz);
-        SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         Sensor accelermoter = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(this,accelermoter,SensorManager.SENSOR_DELAY_NORMAL);
+        sensorEventListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                Myx.setText("X : "+event.values[0]+"m/s\u00B2");
+                Myy.setText("Y : "+event.values[1]+"m/s\u00B2");
+                Myz.setText("Z : "+event.values[2]+"m/s\u00B2");
+            }
 
-    }
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        Myx.setText("X: "+event.values[0]+"m/s\u00B2");
-        Myy.setText("Y: "+event.values[1]+"m/s\u00B2");
-        Myz.setText("Z: "+event.values[2]+"m/s\u00B2");
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+        sensorManager.registerListener(sensorEventListener,accelermoter,SensorManager.SENSOR_DELAY_NORMAL);
 
     }
 }

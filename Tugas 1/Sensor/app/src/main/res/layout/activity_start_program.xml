@@ -35,6 +35,42 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:fontFamily="sans-serif-thin"
-        android:textSize="30dp"/>
+        android:textSize="30dp"
+        android:text="Not Record Data"/>
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/rx"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".33"
+            android:fontFamily="sans-serif-thin"
+            android:textSize="15dp"
+            android:text="X"
+            android:layout_gravity="center_horizontal"/>
+        <TextView
+            android:id="@+id/ry"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".33"
+            android:fontFamily="sans-serif-thin"
+            android:textSize="15dp"
+            android:text="Y"
+            android:layout_gravity="center_horizontal"/>
+        <TextView
+            android:id="@+id/rz"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".33"
+            android:fontFamily="sans-serif-thin"
+            android:textSize="15dp"
+            android:text="Z"
+            android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
