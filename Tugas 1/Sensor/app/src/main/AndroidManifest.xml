@@ -8,16 +8,22 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ListSensor"
+            android:label="@string/title_activity_list_sensor"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".Accelerometer"
+            android:label="@string/acce"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".StartProgram"
+            android:label="@string/main"
+            android:parentActivityName=".MainActivity" ></activity>
     </application>
 
 </manifest>
