@@ -7,11 +7,7 @@ import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
-
 import com.opencsv.CSVWriter;
-
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,9 +23,24 @@ public class StartProgram extends AppCompatActivity{
     private SensorManager sensorManager;
     private SensorEventListener sensorEventListener;
     private boolean isrecord = false;
-    private String baseDir,date,filename;
-    private CSVWriter writer;
-    private List<String[]> data;
+    private String datefile = "" , nowtime;
+    private List<String[]> data = new ArrayList<String[]>();
+
+    public void writeTocsv() throws IOException{
+        String basedir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+        String filepath = basedir+File.separator+datefile+".csv";
+        File file = new File(filepath);
+        CSVWriter writer;
+        if(file.exists() && !file.isDirectory()){
+            FileWriter fileWriter = new FileWriter(filepath);
+            writer = new CSVWriter(fileWriter);
+        }
+        else {
+            writer = new CSVWriter(new FileWriter(filepath));
+        }
+        writer.writeAll(data);
+        writer.close();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,25 +56,9 @@ public class StartProgram extends AppCompatActivity{
         sensorManager = (SensorManager)this.getSystemService(SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        if(lightSensor!=null){
-            existlight.setText("Available Light Sensor");
-        }
-        else{
-            existlight.setText("Unavailable Light Sensor");
-        }
 
-        /*baseDir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-        date = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        filename = baseDir + File.separator + date+".csv";
-
-        try {
-            writer = new CSVWriter(new FileWriter(filename));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        data = new ArrayList<String[]>();
-        data.add(new String[]{"X","Y","Z"});*/
+        String Mytemp = (lightSensor!=null) ? "Available Light Sensor" : "Unavailable Light Sensor";
+        existlight.setText(Mytemp);
 
         sensorEventListener = new SensorEventListener() {
             @Override
@@ -74,23 +69,33 @@ public class StartProgram extends AppCompatActivity{
                 }
                 else if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
                     if(myvaluelight==0) {
+                        isrecord = false;
+                        datefile = (datefile.isEmpty() && datefile!=null) ? new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) : datefile;
                         record.setText("Recording Data");
                         x.setText("x : "+event.values[0]);
                         y.setText("y : "+event.values[1]);
                         z.setText("z : "+event.values[2]);
-                        /*if(!isrecord){
-                            data.add(new String[]{String.valueOf(event.values[0]),String.valueOf(event.values[1]),String.valueOf(event.values[2])});
-                        }*/
+                        nowtime = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date());
+                        data.add(new String[]{
+                                    nowtime,
+                                    Float.toString(event.values[0]),
+                                    Float.toString(event.values[1]),
+                                    Float.toString(event.values[2])
+                                });
                     }
                     else{
+                        isrecord = true;
                         record.setText("Record Data Done");
-                        /*writer.writeAll(data);
                         try {
-                            writer.close();
+                            writeTocsv();
                         } catch (IOException e) {
                             e.printStackTrace();
-                        }*/
-                        isrecord = true;
+                        }
+                    }
+
+                    if(isrecord){
+                        datefile = "";
+                        data.clear();
                     }
                 }
             }
