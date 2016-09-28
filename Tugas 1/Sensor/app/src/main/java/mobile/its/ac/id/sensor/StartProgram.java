@@ -54,16 +54,16 @@ public class StartProgram extends AppCompatActivity{
         record = (TextView)findViewById(R.id.record);
 
         sensorManager = (SensorManager)this.getSystemService(SENSOR_SERVICE);
-        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        String Mytemp = (lightSensor!=null) ? "Available Light Sensor" : "Unavailable Light Sensor";
+        String Mytemp = (lightSensor!=null) ? "Available Proximity Sensor" : "Unavailable Proximity Sensor";
         existlight.setText(Mytemp);
 
         sensorEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if(event.sensor.getType() == Sensor.TYPE_LIGHT){
+                if(event.sensor.getType() == Sensor.TYPE_PROXIMITY){
                     valuelight.setText(""+event.values[0]);
                     myvaluelight = event.values[0];
                 }
@@ -86,6 +86,9 @@ public class StartProgram extends AppCompatActivity{
                     else{
                         isrecord = true;
                         record.setText("Record Data Done");
+                        x.setText("x : 0");
+                        y.setText("y : 0");
+                        z.setText("z : 0");
                         try {
                             writeTocsv();
                         } catch (IOException e) {
