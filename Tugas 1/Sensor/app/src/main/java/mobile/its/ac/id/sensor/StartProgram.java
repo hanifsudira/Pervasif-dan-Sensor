@@ -54,7 +54,7 @@ public class StartProgram extends AppCompatActivity{
         record = (TextView)findViewById(R.id.record);
 
         sensorManager = (SensorManager)this.getSystemService(SENSOR_SERVICE);
-        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY); //TYPE_LIGHT
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         String Mytemp = (lightSensor!=null) ? "Available Proximity Sensor" : "Unavailable Proximity Sensor";
