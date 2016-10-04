@@ -17,18 +17,19 @@ import java.util.Date;
 import java.util.List;
 
 public class StartProgram extends AppCompatActivity{
-    private TextView existlight,valuelight,record,x,y,z;;
-    private Sensor lightSensor,accelerometer;
+    private TextView existlight,valuelight,record,x,y,z,gx,gy,gz;
+    private Sensor lightSensor,accelerometer,gyrometer;
     private float myvaluelight = -1;
     private SensorManager sensorManager;
     private SensorEventListener sensorEventListener;
-    private boolean isrecord = false;
-    private String datefile = "" , nowtime;
-    private List<String[]> data = new ArrayList<String[]>();
+    private boolean isrecord,isrecordGyro = false;
+    private String datefile = "", datefilegyro = "", nowtime;
+    private List<String[]> dataAcce = new ArrayList<String[]>();
+    private List<String[]> dataGyro = new ArrayList<String[]>();
 
     public void writeTocsv() throws IOException{
         String basedir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-        String filepath = basedir+File.separator+datefile+".csv";
+        String filepath = basedir+File.separator+datefile+"_Acce.csv";
         File file = new File(filepath);
         CSVWriter writer;
         if(file.exists() && !file.isDirectory()){
@@ -38,7 +39,23 @@ public class StartProgram extends AppCompatActivity{
         else {
             writer = new CSVWriter(new FileWriter(filepath));
         }
-        writer.writeAll(data);
+        writer.writeAll(dataAcce);
+        writer.close();
+    }
+
+    public void writeTocsvGyro() throws  IOException{
+        String basedir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+        String filepath = basedir+File.separator+datefilegyro+"_Gyro.csv";
+        File file = new File(filepath);
+        CSVWriter writer;
+        if(file.exists() && !file.isDirectory()){
+            FileWriter fileWriter = new FileWriter(filepath);
+            writer = new CSVWriter(fileWriter);
+        }
+        else {
+            writer = new CSVWriter(new FileWriter(filepath));
+        }
+        writer.writeAll(dataGyro);
         writer.close();
     }
 
@@ -51,13 +68,17 @@ public class StartProgram extends AppCompatActivity{
         x = (TextView)findViewById(R.id.rx);
         y = (TextView)findViewById(R.id.ry);
         z = (TextView)findViewById(R.id.rz);
+        gx = (TextView)findViewById(R.id.gx);
+        gy = (TextView)findViewById(R.id.gy);
+        gz = (TextView)findViewById(R.id.gz);
         record = (TextView)findViewById(R.id.record);
 
         sensorManager = (SensorManager)this.getSystemService(SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY); //TYPE_LIGHT
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        gyrometer = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
-        String Mytemp = (lightSensor!=null) ? "Available Proximity Sensor" : "Unavailable Proximity Sensor";
+        String Mytemp = (lightSensor!=null && gyrometer!=null) ? "Available Proximity & Gyro Sensor" : "Unavailable Proximity & Gyro Sensor";
         existlight.setText(Mytemp);
 
         sensorEventListener = new SensorEventListener() {
@@ -76,7 +97,7 @@ public class StartProgram extends AppCompatActivity{
                         y.setText("y : "+event.values[1]);
                         z.setText("z : "+event.values[2]);
                         nowtime = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date());
-                        data.add(new String[]{
+                        dataAcce.add(new String[]{
                                     nowtime,
                                     Float.toString(event.values[0]),
                                     Float.toString(event.values[1]),
@@ -85,20 +106,51 @@ public class StartProgram extends AppCompatActivity{
                     }
                     else{
                         isrecord = true;
-                        record.setText("Record Data Done");
-                        x.setText("x : 0");
-                        y.setText("y : 0");
-                        z.setText("z : 0");
+                        record.setText("Not Record Data");
+                        x.setText("X : -");
+                        y.setText("Y : -");
+                        z.setText("Z : -");
+                    }
+
+                    if(isrecord){
                         try {
                             writeTocsv();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }
-
-                    if(isrecord){
                         datefile = "";
-                        data.clear();
+                        dataAcce.clear();
+                    }
+                }
+                else if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE){
+                    if(myvaluelight==0){
+                        isrecordGyro = false;
+                        datefilegyro = (datefilegyro.isEmpty() && datefilegyro!=null) ? new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) : datefilegyro;
+                        gx.setText("x : "+event.values[0]);
+                        gy.setText("y : "+event.values[1]);
+                        gz.setText("z : "+event.values[2]);
+                        nowtime = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date());
+                        dataGyro.add(new String[]{
+                                nowtime,
+                                Float.toString(event.values[0]),
+                                Float.toString(event.values[1]),
+                                Float.toString(event.values[2])
+                        });
+                    }
+                    else{
+                        isrecordGyro = true;
+                        gx.setText("X : -");
+                        gy.setText("Y : -");
+                        gz.setText("X : -");
+                    }
+                    if(isrecordGyro){
+                        try{
+                            writeTocsvGyro();
+                        }catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        datefilegyro = "";
+                        dataGyro.clear();
                     }
                 }
             }
@@ -110,5 +162,6 @@ public class StartProgram extends AppCompatActivity{
         };
         sensorManager.registerListener(sensorEventListener,lightSensor,SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorEventListener,accelerometer,SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener,gyrometer,SensorManager.SENSOR_DELAY_NORMAL);
     }
 }

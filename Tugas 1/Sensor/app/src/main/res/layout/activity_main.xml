@@ -100,4 +100,10 @@
             android:text="Start"
             android:textSize="10dp"/>
     </LinearLayout>
+    <Button
+        android:id="@+id/btnSms"
+        android:layout_below="@id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kirim SMS"/>
 </RelativeLayout>
