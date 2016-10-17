@@ -11,12 +11,15 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="mobile.its.ac.id.sensor.StartProgram">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <TextView
                 android:id="@+id/textlight"
                 android:layout_width="match_parent"
@@ -89,7 +92,9 @@
                     android:textSize="15dp" />
 
             </LinearLayout>
+
             <LinearLayout
+                android:id="@+id/gyro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/linearLayout1"
@@ -129,6 +134,17 @@
                     android:text="Z : -"
                     android:textSize="15dp" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/gyro"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-thin"
+                android:gravity="center_horizontal"
+                android:text="Tidak Kenapa"
+                android:textSize="20sp" />
         </RelativeLayout>
     </ScrollView>
 
