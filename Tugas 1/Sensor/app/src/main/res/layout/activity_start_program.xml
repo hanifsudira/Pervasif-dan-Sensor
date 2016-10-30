@@ -156,7 +156,7 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif-thin"
                 android:gravity="center_horizontal"
-                android:text="Tidak Kenapa"
+                android:text="---"
                 android:textSize="20sp" />
         </RelativeLayout>
     </ScrollView>

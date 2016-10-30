@@ -3,7 +3,6 @@
     android:id="@+id/listviewtext"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fontFamily="sans-serif"
     android:padding="10dip"
-    android:textSize="16dip"
-    android:fontFamily="sans-serif">
-</TextView>
+    android:textSize="16dip"/>

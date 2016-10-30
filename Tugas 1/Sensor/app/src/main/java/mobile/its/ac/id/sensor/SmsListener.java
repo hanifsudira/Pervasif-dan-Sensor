@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
@@ -16,16 +17,20 @@ public class SmsListener extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
         SmsMessage[] messages = null;
-        String message_from;
+        String messageFrom = "", messageBody = "";
         if(bundle!=null){
             try{
                 Object[] pdus = (Object[]) bundle.get("pdus");
                 messages = new SmsMessage[pdus.length];
                 for(int i=0;i<messages.length;i++){
                     messages[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-                    message_from = messages[i].getOriginatingAddress();
-                    String messageBody = messages[i].getMessageBody();
+                    messageFrom = messages[i].getOriginatingAddress();
+                    messageBody = messages[i].getMessageBody();
                 }
+                Log.d("Pesan", messageBody);
+                String message = "Maaf saya sedang dalam berkendara, harap hubung nanti";
+                SmsManager smsManager = SmsManager.getDefault();
+                smsManager.sendTextMessage(messageFrom,null,message,null,null);
             }
             catch (Exception e){
                 Log.d("Exception caught",e.getMessage());

@@ -1,6 +1,7 @@
 package mobile.its.ac.id.sensor;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -36,7 +37,7 @@ import java.util.List;
 
 public class StartProgram extends AppCompatActivity {
     private TextView type, existlight, valuelight, record, x, y, z, gx, gy, gz, speed;
-    private Sensor lightSensor, accelerometer, gyrometer;
+    private Sensor lightSensor, accelerometer, gyrometer, linearacc;
     private float myvaluelight = -1;
     private SensorManager sensorManager;
     private SensorEventListener sensorEventListener;
@@ -47,9 +48,6 @@ public class StartProgram extends AppCompatActivity {
     private float[][] dataTraining = new float[200][4];
     private float[][] dataTest = new float[50][3];
     private int counter = 0;
-
-    private LocationManager locationManager;
-    private LocationListener locationListener;
 
     public void writeTocsv() throws IOException {
         String basedir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -172,11 +170,10 @@ public class StartProgram extends AppCompatActivity {
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY); //TYPE_LIGHT
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         //gyrometer = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        linearacc = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-        //speed
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        String Mytemp = (lightSensor != null && gyrometer != null) ? "Available Proximity" : "Unavailable Proximity & Gyro Sensor";
+        String Mytemp = (lightSensor != null ) ? "Available Proximity" : "Unavailable Proximity Sensor";
         existlight.setText(Mytemp);
 
         sensorEventListener = new SensorEventListener() {
@@ -190,9 +187,9 @@ public class StartProgram extends AppCompatActivity {
                         isrecord = false;
                         datefile = (datefile.isEmpty() && datefile != null) ? new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) : datefile;
                         record.setText("Recording Data");
-                        x.setText("x : " + event.values[0]);
-                        y.setText("y : " + event.values[1]);
-                        z.setText("z : " + event.values[2]);
+                        x.setText("X : " + event.values[0]);
+                        y.setText("Y : " + event.values[1]);
+                        z.setText("Z : " + event.values[2]);
                         nowtime = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date());
                         dataAcce.add(new String[]{
                                 nowtime,
@@ -200,13 +197,13 @@ public class StartProgram extends AppCompatActivity {
                                 Float.toString(event.values[1]),
                                 Float.toString(event.values[2])
                         });
-                       /* if(counter<50){
+                       if(counter<50){
                             dataTest[counter][0] = event.values[0];
                             dataTest[counter][1] = event.values[1];
                             dataTest[counter][2] = event.values[2];
                             counter++;
-                        }*/
-                        /*if(counter==50){
+                       }
+                        if(counter==50){
                             float[] temp = {0,0,0};
                             for(int i=0;i<50;i++){
                                 temp[0] += dataTest[i][0]/50;
@@ -239,11 +236,12 @@ public class StartProgram extends AppCompatActivity {
                             String tempOn = (sum[0]<sum[1]) ? "Sedang Naik Motor" : "Tidak Naik Motor" ;
                             type.setText(tempOn);
                             counter = 0;
-                        }*/
+                        }
 
                     } else {
                         isrecord = true;
                         record.setText("Not Record Data");
+                        type.setText("---");
                         x.setText("X : -");
                         y.setText("Y : -");
                         z.setText("Z : -");
@@ -258,9 +256,9 @@ public class StartProgram extends AppCompatActivity {
                         datefile = "";
                         dataAcce.clear();
                     }
-                } else if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-
-                }
+                } /*else if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+                    speed.setText("Kecepatan : "+event.values[2]);
+                }*/
                 /*else if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE){
                     if(myvaluelight==0){
                         isrecordGyro = false;
@@ -300,45 +298,10 @@ public class StartProgram extends AppCompatActivity {
             }
         };
 
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                location.getLatitude();
-                speed.setText("Kecepatan : "+location.getSpeed());
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-
         //sensor
         sensorManager.registerListener(sensorEventListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_GAME);
-        sensorManager.registerListener(sensorEventListener, gyrometer, SensorManager.SENSOR_DELAY_NORMAL);
-
-        //speed
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        //sensorManager.registerListener(sensorEventListener, gyrometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, linearacc, SensorManager.SENSOR_DELAY_NORMAL);
     }
 }
