@@ -27,7 +27,9 @@ public class SmsListener extends BroadcastReceiver {
                     messageFrom = messages[i].getOriginatingAddress();
                     messageBody = messages[i].getMessageBody();
                 }
+                //debug
                 Log.d("Pesan", messageBody);
+
                 String message = "Maaf saya sedang dalam berkendara, harap hubung nanti";
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage(messageFrom,null,message,null,null);
