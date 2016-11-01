@@ -37,11 +37,11 @@ import java.util.List;
 
 public class StartProgram extends AppCompatActivity {
     private TextView type, existlight, valuelight, record, x, y, z, gx, gy, gz, speed;
-    private Sensor lightSensor, accelerometer, gyrometer, linearacc;
+    private Sensor lightSensor, accelerometer, linearacc;
     private float myvaluelight = -1;
     private SensorManager sensorManager;
     private SensorEventListener sensorEventListener;
-    private boolean isrecord, isrecordGyro = false;
+    private boolean isrecord = false;
     private String datefile = "", datefilegyro = "", nowtime;
     private List<String[]> dataAcce = new ArrayList<String[]>();
     private List<String[]> dataGyro = new ArrayList<String[]>();
@@ -61,21 +61,6 @@ public class StartProgram extends AppCompatActivity {
             writer = new CSVWriter(new FileWriter(filepath));
         }
         writer.writeAll(dataAcce);
-        writer.close();
-    }
-
-    public void writeTocsvGyro() throws IOException {
-        String basedir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-        String filepath = basedir + File.separator + datefilegyro + "_Gyro.csv";
-        File file = new File(filepath);
-        CSVWriter writer;
-        if (file.exists() && !file.isDirectory()) {
-            FileWriter fileWriter = new FileWriter(filepath);
-            writer = new CSVWriter(fileWriter);
-        } else {
-            writer = new CSVWriter(new FileWriter(filepath));
-        }
-        writer.writeAll(dataGyro);
         writer.close();
     }
 
@@ -159,21 +144,43 @@ public class StartProgram extends AppCompatActivity {
         x = (TextView) findViewById(R.id.rx);
         y = (TextView) findViewById(R.id.ry);
         z = (TextView) findViewById(R.id.rz);
-/*      gx = (TextView)findViewById(R.id.gx);
-        gy = (TextView)findViewById(R.id.gy);
-        gz = (TextView)findViewById(R.id.gz);*/
-        speed = (TextView)findViewById(R.id.kecepatan );
+        speed = (TextView) findViewById(R.id.kecepatan);
         record = (TextView) findViewById(R.id.record);
+
+        LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
+        LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                location.getLatitude();
+                int temp = (int) (location.getSpeed() * 3600 / 100);
+                Integer mytemp = temp;
+                speed.setText("Kecepatan : "+mytemp.toString());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
 
         //sensor
         sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY); //TYPE_LIGHT
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        //gyrometer = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         linearacc = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-
-        String Mytemp = (lightSensor != null ) ? "Available Proximity" : "Unavailable Proximity Sensor";
+        String Mytemp = (lightSensor != null) ? "Available Proximity" : "Unavailable Proximity Sensor";
         existlight.setText(Mytemp);
 
         sensorEventListener = new SensorEventListener() {
@@ -197,43 +204,42 @@ public class StartProgram extends AppCompatActivity {
                                 Float.toString(event.values[1]),
                                 Float.toString(event.values[2])
                         });
-                       if(counter<50){
+                        if (counter < 50) {
                             dataTest[counter][0] = event.values[0];
                             dataTest[counter][1] = event.values[1];
                             dataTest[counter][2] = event.values[2];
                             counter++;
-                       }
-                        if(counter==50){
-                            float[] temp = {0,0,0};
-                            for(int i=0;i<50;i++){
-                                temp[0] += dataTest[i][0]/50;
-                                temp[1] += dataTest[i][1]/50;
-                                temp[2] += dataTest[i][2]/50;
+                        }
+                        if (counter == 50) {
+                            float[] temp = {0, 0, 0};
+                            for (int i = 0; i < 50; i++) {
+                                temp[0] += dataTest[i][0] / 50;
+                                temp[1] += dataTest[i][1] / 50;
+                                temp[2] += dataTest[i][2] / 50;
                             }
                             float[][] distance = new float[200][2];
-                            for(int i=0;i<200;i++){
-                                float tempX = temp[0]-dataTraining[i][0];
-                                float tempY = temp[1]-dataTraining[i][1];
-                                float tempZ = temp[2]-dataTraining[i][2];
-                                distance[i][0] = (tempX*tempX)+(tempY*tempY)+(tempZ*tempZ);
+                            for (int i = 0; i < 200; i++) {
+                                float tempX = temp[0] - dataTraining[i][0];
+                                float tempY = temp[1] - dataTraining[i][1];
+                                float tempZ = temp[2] - dataTraining[i][2];
+                                distance[i][0] = (tempX * tempX) + (tempY * tempY) + (tempZ * tempZ);
                                 distance[i][1] = dataTraining[i][3];
                             }
-                            Arrays.sort(distance,new Comparator<float[]>(){
+                            Arrays.sort(distance, new Comparator<float[]>() {
                                 @Override
-                                public int compare(float[] entry1,float[] entry2){
-                                   return Float.compare(entry1[0],entry2[0]);
+                                public int compare(float[] entry1, float[] entry2) {
+                                    return Float.compare(entry1[0], entry2[0]);
                                 }
                             });
-                            int[] sum = {0,0};
-                            for(int i=0;i<10;i++){
-                                if(distance[i][0]==0){
+                            int[] sum = {0, 0};
+                            for (int i = 0; i < 10; i++) {
+                                if (distance[i][0] == 0) {
                                     sum[0]++;
-                                }
-                                else {
+                                } else {
                                     sum[1]++;
                                 }
                             }
-                            String tempOn = (sum[0]<sum[1]) ? "Sedang Naik Motor" : "Tidak Naik Motor" ;
+                            String tempOn = (sum[0] < sum[1]) ? "Sedang Naik Motor" : "Tidak Naik Motor";
                             type.setText(tempOn);
                             counter = 0;
                         }
@@ -256,40 +262,7 @@ public class StartProgram extends AppCompatActivity {
                         datefile = "";
                         dataAcce.clear();
                     }
-                } /*else if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-                    speed.setText("Kecepatan : "+event.values[2]);
-                }*/
-                /*else if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE){
-                    if(myvaluelight==0){
-                        isrecordGyro = false;
-                        datefilegyro = (datefilegyro.isEmpty() && datefilegyro!=null) ? new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) : datefilegyro;
-                        gx.setText("x : "+event.values[0]);
-                        gy.setText("y : "+event.values[1]);
-                        gz.setText("z : "+event.values[2]);
-                        nowtime = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date());
-                        *//*dataGyro.add(new String[]{
-                                nowtime,
-                                Float.toString(event.values[0]),
-                                Float.toString(event.values[1]),
-                                Float.toString(event.values[2])
-                        });*//*
-                    }
-                    else{
-                        isrecordGyro = true;
-                        gx.setText("X : -");
-                        gy.setText("Y : -");
-                        gz.setText("X : -");
-                    }
-                    if(isrecordGyro){
-                        *//*try{
-                            writeTocsvGyro();
-                        }catch (IOException e) {
-                            e.printStackTrace();
-                        }*//*
-                        datefilegyro = "";
-                        dataGyro.clear();
-                    }
-                }*/
+                }
             }
 
             @Override
@@ -301,7 +274,17 @@ public class StartProgram extends AppCompatActivity {
         //sensor
         sensorManager.registerListener(sensorEventListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_GAME);
-        //sensorManager.registerListener(sensorEventListener, gyrometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorEventListener, linearacc, SensorManager.SENSOR_DELAY_NORMAL);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 }
