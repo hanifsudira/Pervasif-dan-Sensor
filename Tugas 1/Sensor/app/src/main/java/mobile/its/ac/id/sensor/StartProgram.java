@@ -36,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 public class StartProgram extends AppCompatActivity {
-    private TextView type, existlight, valuelight, record, x, y, z, gx, gy, gz, speed;
+    private TextView type, existlight, valuelight, record, x, y, z, speed;
     private Sensor lightSensor, accelerometer, linearacc;
     private float myvaluelight = -1;
     private SensorManager sensorManager;
@@ -44,10 +44,16 @@ public class StartProgram extends AppCompatActivity {
     private boolean isrecord = false;
     private String datefile = "", datefilegyro = "", nowtime;
     private List<String[]> dataAcce = new ArrayList<String[]>();
-    private List<String[]> dataGyro = new ArrayList<String[]>();
     private float[][] dataTraining = new float[200][4];
     private float[][] dataTest = new float[50][3];
     private int counter = 0;
+
+    private Integer myTemp;
+    private String tempOns;
+
+    public String getStatus(){
+        return tempOns;
+    }
 
     public void writeTocsv() throws IOException {
         String basedir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -154,8 +160,8 @@ public class StartProgram extends AppCompatActivity {
             public void onLocationChanged(Location location) {
                 location.getLatitude();
                 int temp = (int) (location.getSpeed() * 3600 / 100);
-                Integer mytemp = temp;
-                speed.setText("Kecepatan : "+mytemp.toString());
+                myTemp = temp;
+                speed.setText("Kecepatan : "+myTemp.toString());
             }
 
             @Override
@@ -240,7 +246,8 @@ public class StartProgram extends AppCompatActivity {
                                 }
                             }
                             String tempOn = (sum[0] < sum[1]) ? "Sedang Naik Motor" : "Tidak Naik Motor";
-                            type.setText(tempOn);
+                            tempOns = tempOn.equals("Sedang Naik Motor") && myTemp > 20 ? "Sedang Naik Motor" : "Tidak Naik Motor";
+                            type.setText(tempOns);
                             counter = 0;
                         }
 
@@ -286,5 +293,6 @@ public class StartProgram extends AppCompatActivity {
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
     }
 }

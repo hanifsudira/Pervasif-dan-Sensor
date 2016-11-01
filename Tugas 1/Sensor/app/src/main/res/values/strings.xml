@@ -3,4 +3,5 @@
     <string name="title_activity_list_sensor">List Sensor</string>
     <string name="acce">Accelerometer</string>
     <string name="main">Main Program</string>
+    <string name="androidpermission">Please Allow Permission</string>
 </resources>
